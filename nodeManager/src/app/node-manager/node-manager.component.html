@@ -1,0 +1,179 @@
+<div class="main py-5">
+    <div class="container">
+      <h1>Node Manager</h1>
+    </div>
+    
+    <div class="container">
+      <h4 class="pt-4">View chain</h4>
+      
+      <div class="pb-2">
+        <select class="custom-select" type="text" name="url" [ngModel]="selectedNode.uniqueID" (change)="onNodeChange($event.target.value)" disabled="true">
+          <option *ngFor="let node of nodes">{{node.uniqueID}}</option>
+        </select>
+      </div>
+      
+      <ng-table [config]="config"
+        [rows]="rows_table" [columns]="columns">
+      </ng-table>
+    </div>
+  
+    <div class="container">
+      <button class="btn btn-primary" data-toggle="modal" (click)="updateGeneratedTransactions()" data-target="#generateModal">Generate Transactions</button>
+      <button class="btn btn-primary" data-toggle="modal" data-target="#transactionModal">Add Transaction</button>
+      <button class="btn btn-primary" data-toggle="modal" (click)="updatePendingTransactions()" data-target="#mineBlockModal">Mine Block</button>
+      <button class="btn btn-primary" data-toggle="modal" (click)="updateNodes()" data-target="#syncModal">Sync</button>
+    </div>
+  
+    <div class="modal fade" tabindex="-1" role="dialog" id="generateModal">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Generate Transactions</h5>
+          </div>
+          <div class="modal-body">
+            <p>Add test transactions to pending transactions?</p>
+            <ng-table [config]="config"
+              [rows]="rows_generate" [columns]="columns">
+            </ng-table> 
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" (click)="addGeneratedTransactions()">Add</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="modal fade" tabindex="-1" role="dialog" id="transactionModal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add Transaction</h5>
+          </div>
+          <div class="modal-body">
+            <form (ngSubmit)="onNewTransaction()">
+              <div class="form-group row">
+                <label class="col-2 col-form-label">ID</label>
+                <div class="col-10">
+                  <input type="text" class="form-control" name="id" required [(ngModel)]="newTransaction.id" placeholder="xx-xxx">
+                </div>
+              </div>
+  
+              <div class="form-group row">
+                <label class="col-2 col-form-label">Date</label>
+                <div class="col-10">
+                  <input type="text" class="form-control" name="date" required [(ngModel)]="newTransaction.date" placeholder="mm-dd-yyyy">
+                </div>
+              </div>
+  
+              <div class="form-group row">
+                <label class="col-12 col-form-label">Description</label>
+                <div class="col-12">
+                  <input type="text" class="form-control" name="description" required [(ngModel)]="newTransaction.description" placeholder="description">
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label>Debit</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">$</span>
+                  </div>
+                  <input class="form-control" name="debit" currencyMask required [(ngModel)]="newTransaction.debit" placeholder="0.00" [options]="{ prefix:'' }">
+                  <div class="input-group-append">
+                    <select class="custom-select" name="debitType" [(ngModel)]="newTransaction.debitType">
+                      <option *ngFor="let currency of currencies">{{currency}}</option>
+                    </select>                
+                  </div>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label>Credit</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">$</span>
+                  </div>
+                  <input class="form-control" name="credit" currencyMask required [(ngModel)]="newTransaction.credit" placeholder="0.00" [options]="{ prefix:'' }">
+                  <div class="input-group-append">
+                    <select class="custom-select" name="creditType" [(ngModel)]="newTransaction.creditType">
+                      <option *ngFor="let currency of currencies">{{currency}}</option>
+                    </select>                
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Add</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              </div>
+            </form>          
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="modal fade" tabindex="-1" role="dialog" id="mineBlockModal">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Mine Block</h5>
+          </div>
+          <div class="modal-body">
+            <p>Mining block will validate the following transactions</p>
+            <ng-table [config]="config"
+              [rows]="rows_pending" [columns]="columns">
+            </ng-table> 
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" (click)="mineBlock()">Mine</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="modal fade" tabindex="-1" role="dialog" id="syncModal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Sync</h5>
+          </div>
+          <div class="modal-body">
+            <p>Sync blockchain with peers?</p>   
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Peer</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of rows_nodes">
+                  <th>{{row}}</th>
+                </tr>
+              </tbody>
+            </table>        
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" (click)="handleNode()">Yes</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="modal fade" tabindex="-1" role="dialog" id="dialog">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Notice</h5>
+          </div>
+          <div class="modal-body">
+            {{message}}          
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

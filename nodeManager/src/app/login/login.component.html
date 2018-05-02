@@ -1,0 +1,30 @@
+<style>
+.form-signin {
+    width: 100%;
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+</style>
+
+<div class="main py-5">
+    <form class="form-signin" (ngSubmit)="onLogin()">
+        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+
+        <div class="pb-2">
+          <label>Connection</label>
+          <select class="custom-select" type="text" name="url" [ngModel]="selectedNode.uniqueID" (change)="onNodeChange($event.target.value)">
+            <option *ngFor="let node of nodes">{{node.uniqueID}}</option>
+          </select>
+        </div>
+        <div class="pb-2">
+            <label>Username</label>
+            <input type="text" class="form-control" name="username" placeholder="Username" [(ngModel)]="username">
+        </div>
+        <div class="pb-3">
+            <label>Password</label>
+            <input type="password" class="form-control" name="password" placeholder="Password" [(ngModel)]="password">
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+</div>
