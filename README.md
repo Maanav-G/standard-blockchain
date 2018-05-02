@@ -2,7 +2,7 @@
 
 A standard Blockchain created for the Deloitte Case Competition at CUTC
 
-## Lets Begin
+## Getting Started
 
 The following instructions will allow you to run the project on your local device. 
 Required - node.js and python 3
